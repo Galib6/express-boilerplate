@@ -2,8 +2,8 @@ import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import helmet from 'helmet';
 
+import { setupDocumentation } from './config/docs.config';
 import { env } from './config/env-config';
-import { setupSwagger } from './config/swagger.config';
 import userRoutes from './features/user/routes/user.routes';
 import { apiErrorHandler, unmatchedRoutes } from './middleware/api-error.middleware';
 import { loggerMiddleware, pinoLogger } from './middleware/pino-logger';
@@ -39,8 +39,8 @@ app.get('/heartbeat', (req: Request, res: Response): void => {
   return;
 });
 
-// Setup Swagger Documentation
-setupSwagger(app);
+// Setup API Documentation
+setupDocumentation(app);
 
 // For Swagger UI, we need to disable helmet's Content Security Policy for this route
 // This is necessary to allow Swagger UI to work properly

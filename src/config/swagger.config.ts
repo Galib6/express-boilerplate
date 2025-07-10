@@ -135,6 +135,73 @@ const swaggerDefinition = {
         },
       },
     },
+    responses: {
+      // Common response patterns
+      BadRequest: {
+        description: 'Bad Request - Invalid input data',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/Error' },
+            example: {
+              success: false,
+              message: 'Validation error',
+              errors: [
+                { field: 'email', message: 'Invalid email format' },
+                { field: 'password', message: 'Password must be at least 8 characters' },
+              ],
+            },
+          },
+        },
+      },
+      Unauthorized: {
+        description: 'Unauthorized - Authentication required',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/Error' },
+            example: {
+              success: false,
+              message: 'Authentication required',
+            },
+          },
+        },
+      },
+      Forbidden: {
+        description: 'Forbidden - Insufficient permissions',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/Error' },
+            example: {
+              success: false,
+              message: 'Insufficient permissions',
+            },
+          },
+        },
+      },
+      NotFound: {
+        description: 'Not Found - Resource not found',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/Error' },
+            example: {
+              success: false,
+              message: 'Resource not found',
+            },
+          },
+        },
+      },
+      InternalServerError: {
+        description: 'Internal Server Error',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/Error' },
+            example: {
+              success: false,
+              message: 'Internal server error',
+            },
+          },
+        },
+      },
+    },
   },
   // Global security requirement
   security: [
