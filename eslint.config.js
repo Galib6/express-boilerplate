@@ -1,68 +1,123 @@
-import eslintPluginNode from 'eslint-plugin-node';
-import eslintPluginPrettier from 'eslint-plugin-prettier';
-import eslintPluginImport from 'eslint-plugin-import';
-import eslintPluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
-import eslintPluginUnicorn from 'eslint-plugin-unicorn';
-import eslintPluginSecurity from 'eslint-plugin-security';
-import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import js from '@eslint/js';
+import * as tseslint from 'typescript-eslint';
+import importPlugin from 'eslint-plugin-import';
+import promisePlugin from 'eslint-plugin-promise';
+import nPlugin from 'eslint-plugin-n';
+import securityPlugin from 'eslint-plugin-security';
+import unusedImportsPlugin from 'eslint-plugin-unused-imports';
+import eslintCommentsPlugin from 'eslint-plugin-eslint-comments';
 
 export default [
-  // Ignore patterns
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.strict,
+  ...tseslint.configs.stylistic,
   {
-    ignores: ['dist', 'node_modules', 'prisma'],
-  },
-  // Base config for TypeScript files
-  {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     languageOptions: {
-      parser: tsParser,
+      parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json', // Use your tsconfig for type-aware linting
-        sourceType: 'module', // ES modules
+        project: './tsconfig.json',
+        tsconfigRootDir: process.cwd(),
+      },
+      globals: {
+        __dirname: 'readonly',
+        process: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        exports: 'readonly',
+        console: 'readonly',
+        Buffer: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly',
+        setImmediate: 'readonly',
+        clearImmediate: 'readonly',
+        global: 'readonly',
       },
     },
     plugins: {
-      node: eslintPluginNode,
-      '@typescript-eslint': typescriptEslintPlugin,
-      prettier: eslintPluginPrettier,
-      import: eslintPluginImport,
-      'simple-import-sort': eslintPluginSimpleImportSort,
-      unicorn: eslintPluginUnicorn,
-      security: eslintPluginSecurity,
+      import: importPlugin,
+      promise: promisePlugin,
+      n: nPlugin,
+      security: securityPlugin,
+      'eslint-comments': eslintCommentsPlugin,
+      'unused-imports': unusedImportsPlugin,
+    },
+    settings: {
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.tsx'],
+      },
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: './tsconfig.json',
+        },
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
+      },
     },
     rules: {
-      // Prettier integration
-      'prettier/prettier': 'error',
-
-      // Import sorting
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
-
-      // TypeScript-specific rules
-      '@typescript-eslint/explicit-function-return-type': 'off', // Allow implicit returns
-      '@typescript-eslint/no-explicit-any': 'warn', // Warn on 'any', don’t error
-
-      // Node.js rules
-      'node/no-process-env': 'error', // Enforce env handling (e.g., via env-config)
-
-      // Relaxed rules for flexibility
-      'security/detect-object-injection': 'off', // Disable noisy security rule
-      'unicorn/prefer-module': 'off', // Don’t enforce module syntax
-      'unicorn/no-array-reduce': 'off', // Allow reduce for flexibility
-
-      // Import rules (no extension enforcement)
-      'import/extensions': 'off',
-      'unicorn/filename-case': [
+      'unused-imports/no-unused-imports': 'error',
+      'node/no-unsupported-features/es-syntax': 'off',
+      'node/no-unpublished-import': 'off',
+      'node/no-missing-import': 'off',
+      'node/no-extraneous-import': 'off',
+      /**
+       * ✅ Import Rules
+       */
+      'import/order': [
         'error',
         {
-          case: 'kebabCase',
-          ignore: ['README.md'],
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
         },
       ],
+      'import/no-unresolved': 'error',
+      'import/no-duplicates': 'error',
+      'import/newline-after-import': 'error',
+      'import/no-cycle': ['warn', { maxDepth: 1 }],
+      /**
+       * ✅ Promise Handling
+       */
+      'promise/always-return': 'warn',
+      'promise/no-return-wrap': 'error',
+      'promise/param-names': 'error',
+      'promise/catch-or-return': 'warn',
+
+      /**
+       * ✅ Security Rules
+       */
+      'security/detect-object-injection': 'warn',
+      'security/detect-non-literal-fs-filename': 'warn',
+      'security/detect-child-process': 'error',
+      /**
+       * ✅ ESLint Comments
+       */
+      'eslint-comments/no-unused-disable': 'warn',
+
+      /**
+       * ✅ Code Quality
+       */
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+      'no-debugger': 'error',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'no-duplicate-imports': 'error',
+      'no-multi-spaces': 'warn',
+      'no-unreachable': 'error',
+      'no-unused-expressions': ['warn', { allowShortCircuit: true }],
     },
   },
-  // Turn off ESLint rules that conflict with Prettier
-  eslintConfigPrettier,
+  // Ignore Patterns
+  {
+    ignores: ['node_modules/', 'dist/', 'coverage/'],
+  },
 ];

@@ -1,26 +1,15 @@
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-
-# misc
-npm-debug.log
-testem.log
-
-# System Files
-.DS_Store
-Thumbs.db
-
-# Local env files
-.env
-.env.dev
-
-# Ignore Node.js modules
+# node modules
 node_modules/
+# logs
+logs/
+# dependency directories
+jspm_packages/
+# coverage directory used by tools like istanbul
+coverage/
+# nyc test coverage
+.nyc_output/
+#env files
+.env
+/src/generated/prisma
+# output from bundlers
 dist/
-
-info.txt
-src/logs/*

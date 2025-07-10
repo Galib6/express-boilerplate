@@ -1,33 +1,44 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+// Enums
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+// User model for admin and employee users
 model User {
-  id        String   @id @default(uuid())
-  firstName String?
-  lastName  String?
-  email     String   @unique
-  password  String?
-  roleId    String?
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  // Relationships
-  role      Roles?   @relation(fields: [roleId], references: [id])
-}
+  id                          Int       @id @default(autoincrement())
+  name                        String
+  email                       String    @unique 
+  phoneNumber                 String    @unique
+  password                    String
+  otp                         String?
+  otpExpiresAt                DateTime?
+  otpVerified                 Boolean   @default(false)
+  isActive                    Boolean   @default(true)
+  refreshToken                String?
+  refreshTokenExpiresAt       DateTime?
+  lastLogin                   DateTime?
 
-model Roles {
-  id     String @id @default(uuid())
-  name   String
-  active Int    @default(1) @db.SmallInt
-  user   User[]
+  profilePicture              String?
+  address                     String?
+  city                        String?
+  pinCode                     String?
+  state                       String?
+  role                        Role      @default(EMPLOYEE)  
+
+  employees                   User[]    @relation("AdminEmployees") 
+  admin                       User?     @relation("AdminEmployees", fields: [adminId], references: [id])
+  adminId                     Int?      
+
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
 }
